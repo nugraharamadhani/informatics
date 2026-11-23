@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Soal SAS Informatika Kelas 9 - Paket A & B</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #4568dc 0%, #b06ab3 100%);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 950px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    padding: 30px;
+  }
+  h1 {
+    text-align: center;
+    color: #3b3b8c;
+    margin-bottom: 5px;
+    font-size: 23px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 25px;
+    font-size: 14px;
+  }
+  /* Pilih Paket */
+  #paketForm {
+    background: #f5f3ff;
+    border: 2px solid #cfc6ee;
+    border-radius: 10px;
+    padding: 22px;
+  }
+  #paketForm h2 { margin-top: 0; color: #3b3b8c; font-size: 18px; }
+  .paket-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 12px 0 20px;
+  }
+  .paket-card {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    text-align: center;
+    background: #fff;
+    transition: all 0.25s;
+  }
+  .paket-card:hover { border-color: #7b5cd6; transform: translateY(-2px); }
+  .paket-card.selected {
+    border-color: #7b5cd6;
+    background: #ede7ff;
+    box-shadow: 0 4px 15px rgba(123,92,214,0.35);
+  }
+  .paket-card .icon { font-size: 30px; }
+  .paket-card .nama { font-weight: 700; color: #3b3b8c; margin: 6px 0 2px; font-size: 16px; }
+  .paket-card .ket { font-size: 12px; color: #777; }
+  .form-group { margin-bottom: 15px; }
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #444;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border 0.3s;
+  }
+  .form-group input:focus { border-color: #7b5cd6; outline: none; }
+  .btn {
+    background: linear-gradient(135deg, #4568dc, #b06ab3);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(69,104,220,0.5);
+  }
+  /* Soal */
+  #soalContainer { display: none; }
+  .badge-paket {
+    display: inline-block;
+    background: #4568dc;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .soal {
+    background: #fafafa;
+    border-left: 5px solid #7b5cd6;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 18px;
+    transition: background 0.3s;
+  }
+  .soal.correct { background: #e8f5e9; border-left-color: #4caf50; }
+  .soal.wrong { background: #ffebee; border-left-color: #f44336; }
+  .soal .pertanyaan {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+    line-height: 1.55;
+  }
+  .soal .pertanyaan pre {
+    background: #2d2d3a;
+    color: #e6e6e6;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: 'Consolas', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+    margin: 8px 0 0;
+    white-space: pre-wrap;
+  }
+  .soal .nomor {
+    display: inline-block;
+    background: #7b5cd6;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  .opsi {
+    display: block;
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+  }
+  .opsi:hover { background: #f0ecff; }
+  .opsi input { margin-right: 10px; }
+  .opsi.selected { background: #e3daff; border-color: #7b5cd6; }
+  .kunci {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #4caf50;
+    font-weight: 600;
+    display: none;
+  }
+  /* Hasil */
+  #hasil {
+    display: none;
+    text-align: center;
+    background: linear-gradient(135deg, #4568dc, #b06ab3);
+    color: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 20px;
+  }
+  #hasil h2 { margin-top: 0; font-size: 22px; }
+  #nilai {
+    font-size: 62px;
+    font-weight: 800;
+    margin: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+  }
+  #infoSiswa { font-size: 15px; margin-bottom: 15px; opacity: 0.95; }
+  #pesan { font-size: 16px; }
+  .progress-info {
+    text-align: right;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+  }
+  @media (max-width: 600px) {
+    .container { padding: 18px; }
+    h1 { font-size: 19px; }
+    #nilai { font-size: 46px; }
+    .paket-options { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Latihan Soal SAS Informatika</h1>
+  <p class="subtitle">Kelas 9 Semester 1/2026 — Pilih Paket Soal A atau B</p>
+
+  <!-- PILIH PAKET + IDENTITAS -->
+  <div id="paketForm">
+    <h2>1️⃣ Pilih Paket Soal</h2>
+    <div class="paket-options">
+      <div class="paket-card" id="cardA" onclick="pilihPaket('A')">
+        <div class="icon">📘</div>
+        <div class="nama">PAKET A</div>
+        <div class="ket">50 Soal Pilihan Ganda</div>
+      </div>
+      <div class="paket-card" id="cardB" onclick="pilihPaket('B')">
+        <div class="icon">📗</div>
+        <div class="nama">PAKET B</div>
+        <div class="ket">50 Soal Pilihan Ganda</div>
+      </div>
+    </div>
+
+    <h2>2️⃣ Isi Identitas</h2>
+    <div class="form-group">
+      <label for="nama">Nama Lengkap</label>
+      <input type="text" id="nama" placeholder="Masukkan nama lengkap">
+    </div>
+    <div class="form-group">
+      <label for="kelas">Kelas</label>
+      <input type="text" id="kelas" placeholder="Contoh: 9A">
+    </div>
+    <div class="form-group">
+      <label for="absen">Nomor Absen</label>
+      <input type="number" id="absen" placeholder="Contoh: 15">
+    </div>
+    <button class="btn" onclick="mulaiUjian()">🚀 Mulai Mengerjakan</button>
+  </div>
+
+  <!-- SOAL -->
+  <div id="soalContainer">
+    <div class="badge-paket" id="badgePaket"></div>
+    <div class="progress-info" id="progressInfo"></div>
+    <div id="daftarSoal"></div>
+    <div style="text-align:center; margin-top:25px;">
+      <button class="btn" onclick="selesaiUjian()">✅ Selesai & Lihat Nilai</button>
+    </div>
+  </div>
+
+  <!-- HASIL -->
+  <div id="hasil">
+    <h2>🎉 Hasil Latihan</h2>
+    <div id="infoSiswa"></div>
+    <div id="nilai">0</div>
+    <div id="pesan"></div>
+    <button class="btn" style="margin-top:20px; background:linear-gradient(135deg,#3b3b8c,#7b5cd6);" onclick="ulangUjian()">🔄 Ulangi Latihan</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA SOAL
+============================================================ */
+const paketA = [
+  { q: "Media digital memiliki sejumlah karakteristik utama yang membedakannya dari media tradisional. Berikut ini yang <b>bukan</b> merupakan karakteristik utama media digital adalah ....",
+    o: ["Interaktif dan memungkinkan komunikasi dua arah", "Kapasitas penyimpanan data yang sangat terbatas", "Multimedia karena memadukan teks, gambar, audio, dan video", "Dapat disebarkan dan dibagikan dengan mudah"], a: 1 },
+  { q: "Seorang kreator konten ingin mengedit video pendek di smartphone untuk diunggah ke media sosial dengan memanfaatkan berbagai efek, transisi, dan musik gratis secara praktis. Aplikasi editor video mobile yang populer untuk kebutuhan tersebut adalah ....",
+    o: ["Audacity", "CapCut", "GIMP", "Notepad"], a: 1 },
+  { q: "Teknik pemadatan data untuk memperkecil ukuran file dengan cara menghapus sebagian kecil data yang dianggap kurang penting oleh algoritma disebut ....",
+    o: ["Lossless compression", "Uncompressed data", "Lossy compression", "Metadata extraction"], a: 2 },
+  { q: "Saat melakukan pengambilan gambar atau video menggunakan ponsel, kita disarankan untuk menghindari posisi kamera yang melawan arah datangnya cahaya (backlight) karena akan mengakibatkan ....",
+    o: ["Hasil rekaman mengalami efek gerak lambat (slow motion)", "Objek utama pada video terlihat gelap", "Kapasitas memori ponsel cepat penuh", "Warna latar belakang berubah menjadi transparan"], a: 1 },
+  { q: "Tujuan utama dari penerapan etika digital dalam pemanfaatan teknologi informasi di ruang maya adalah ....",
+    o: ["Membatasi kebebasan masyarakat dalam berpendapat secara daring", "Mempercepat penyebaran konten viral tanpa perlu penyaringan", "Mencegah penyalahgunaan teknologi dan mendorong pemanfaatannya untuk kesejahteraan sosial", "Mengutamakan keuntungan komersial dalam setiap unggahan media sosial"], a: 2 },
+  { q: "Saat memproduksi konten video yang akan dipublikasikan secara umum ke internet, hal yang perlu dihindari terkait aturan hak cipta adalah ....",
+    o: ["Menggunakan musik latar berhak cipta milik orang lain tanpa izin", "Memakai rekaman suara narasi pribadi yang direkam sendiri", "Menggunakan lagu berlisensi bebas hak cipta (royalty-free)", "Menambahkan teks judul menggunakan huruf bawaan aplikasi"], a: 0 },
+  { q: "Berdasarkan sifatnya, jenis informasi yang memuat uraian penjelasan mengenai suatu objek, peristiwa, atau keadaan secara terperinci disebut informasi ....",
+    o: ["Opini", "Deskripsi", "Persuasif", "Fiktif"], a: 1 },
+  { q: "Format file gambar yang menggunakan kompresi lossless dan paling mendukung latar belakang transparan (transparency) untuk kebutuhan logo atau ikon adalah ....",
+    o: ["JPEG", "TXT", "PNG", "MP3"], a: 2 },
+  { q: "Perlakuan dan prinsip perlindungan yang paling tepat terhadap data pribadi penduduk seperti NIK, nomor KK, dan rekening bank adalah ....",
+    o: ["Mengunggahnya ke media sosial agar mudah dicari saat dibutuhkan", "Membagikannya di grup percakapan umum sebagai bentuk keterbukaan", "Menjaga kerahasiaannya dan tidak memublikasikannya sebagai informasi publik", "Mencantumkannya secara lengkap pada profil publik akun jejaring sosial"], a: 2 },
+  { q: "Fitur Geotag yang terdapat pada kamera smartphone mampu menyimpan titik koordinat lokasi pengambilan foto dengan memanfaatkan teknologi ....",
+    o: ["Bluetooth", "NFC", "GPS", "Infrared"], a: 2 },
+  { q: "Perhatikan ciri-ciri informasi berikut:<br>1. Sumber berita tidak jelas dan tidak berasal dari lembaga terpercaya<br>2. Menggunakan judul serta kata-kata yang bersifat provokatif<br>3. Tidak ditemukan pemberitaan serupa pada media massa kredibel lainnya<br>4. Tidak disertai bukti autentik yang logis<br><br>Ciri-ciri di atas merupakan karakteristik utama dari informasi ....",
+    o: ["Faktual", "Hoax", "Edukatif", "Deskriptif"], a: 1 },
+  { q: "Regulasi di Indonesia yang mengatur tentang pers serta mewajibkan setiap perusahaan pers berbentuk badan hukum Indonesia adalah ....",
+    o: ["UU No. 40 Tahun 1999", "UU No. 14 Tahun 2008", "UU No. 23 Tahun 2006", "PP No. 37 Tahun 2007"], a: 0 },
+  { q: "Platform digital yang paling sesuai digunakan untuk mendiseminasikan karya tulis berupa artikel panjang, kajian, atau opini mendalam adalah ....",
+    o: ["Layanan streaming musik seperti Spotify", "Situs web dan blog seperti WordPress atau Blogger", "Aplikasi penyunting foto seperti Snapseed", "Aplikasi perekam suara bawaan ponsel"], a: 1 },
+  { q: "Apabila kamu ingin menggunakan gambar dari internet untuk melengkapi konten tugas sekolah secara etis, tindakan yang benar adalah ....",
+    o: ["Menghapus tanda air (watermark) agar terlihat seperti buatan sendiri", "Mengakui gambar tersebut sebagai hasil karya orisinal pribadi", "Memilih gambar berlisensi Creative Commons atau berizin serta mencantumkan sumbernya", "Mengunduh gambar secara acak tanpa memperhatikan hak cipta pemiliknya"], a: 2 },
+  { q: "Perbedaan mendasar antara data dan informasi dalam kajian Informatika adalah ....",
+    o: ["Data selalu berupa angka, sedangkan informasi selalu berupa gambar", "Data tidak dapat disimpan di komputer, sedangkan informasi dapat disimpan", "Data merupakan fakta mentah yang belum diolah, sedangkan informasi adalah hasil pemrosesan data yang sudah bermakna", "Data bersifat subjektif, sedangkan informasi selalu bersifat rahasia"], a: 2 },
+  { q: "Dalam keamanan siber, istilah malware (malicious software) didefinisikan sebagai ....",
+    o: ["Perangkat lunak berbahaya yang dirancang untuk menyusup, merusak, atau mencuri data pada sistem komputer", "Aplikasi pengaman jaringan yang berfungsi memblokir serangan peretas", "Sistem operasi resmi yang dilengkapi sertifikat digital dari pengembang", "Perkakas peramban web yang menyimpan riwayat pencarian pengguna"], a: 0 },
+  { q: "Jenis malware yang bekerja dengan cara mengenkripsi seluruh atau sebagian file milik korban sehingga tidak dapat dibuka, lalu menuntut pembayaran tebusan untuk kunci dekripsinya adalah ....",
+    o: ["Adware", "Ransomware", "Firewall", "Cookie"], a: 1 },
+  { q: "Kemunculan Morris Worm pada tahun 1988 berdampak luas terhadap jaringan komputer saat itu, yaitu ....",
+    o: ["Menghapus seluruh file foto dan musik di sistem operasi Windows", "Memperlambat kinerja ribuan sistem komputer karena menggandakan dirinya terus-menerus", "Mengubah tampilan layar ponsel menjadi skala abu-abu", "Mencuri nomor kartu kredit dari mesin kasir toko ritel"], a: 1 },
+  { q: "Kejahatan siber dengan teknik rekayasa sosial (social engineering) bekerja melalui konsep ....",
+    o: ["Eksploitasi kelemahan perangkat keras server secara otomatis", "Manipulasi psikologis pengguna agar memberikan informasi rahasia atau melanggar protokol keamanan", "Pemindaian tanda tangan virus di dalam memori komputer", "Pengubahan tabel DNS untuk mengalihkan alamat situs web"], a: 1 },
+  { q: "Salah satu cara kerja utama perangkat lunak antivirus dalam mendeteksi keberadaan malware adalah ....",
+    o: ["Mencocokkan tanda tangan (signature) virus pada file dengan kamus database antivirus lalu mengkarantinanya", "Menghapus seluruh riwayat penjelajahan dan cookie di peramban web", "Mengenkripsi seluruh dokumen pribadi agar tidak bisa dibaca pengguna", "Menonaktifkan koneksi internet secara permanen pada perangkat"], a: 0 },
+  { q: "Kelemahan mendasar penggunaan kata sandi (password) tunggal sebagai sistem autentikasi akun adalah ....",
+    o: ["Tidak dapat digunakan pada perangkat berbasis ponsel pintar", "Mudah ditebak jika sederhana, berisiko terlupa, dan rentan dicuri melalui phishing", "Membutuhkan pemindaian retina mata setiap kali pengguna masuk", "Memperlambat kecepatan prosesor saat membuka aplikasi"], a: 1 },
+  { q: "Konsep mindfulness (kesadaran penuh) dalam kehidupan sehari-hari memiliki makna sebagai kemampuan untuk ....",
+    o: ["Melakukan banyak pekerjaan sekaligus (multitasking) dalam waktu singkat", "Hadir sepenuhnya di \"sini dan saat ini\" dengan kesadaran penuh tanpa menghakimi", "Mengabaikan seluruh pikiran dan emosi yang sedang dirasakan", "Menghindari penggunaan semua jenis teknologi modern selamanya"], a: 1 },
+  { q: "Contoh penerapan digital mindfulness saat berinteraksi dengan smartphone adalah ....",
+    o: ["Membuka media sosial berjam-jam tanpa tujuan yang jelas", "Langsung mengecek setiap notifikasi yang masuk saat sedang belajar", "Menggunakan ponsel secara intensional dengan tujuan yang jelas dan sadar", "Membandingkan pencapaian diri dengan unggahan orang lain di media sosial"], a: 2 },
+  { q: "Istirahat sejenak dari penggunaan perangkat digital atau dikenal dengan istilah digital detox merupakan praktik mindfulness yang bermanfaat untuk ....",
+    o: ["Meningkatkan paparan cahaya biru sebelum waktu tidur", "Mengurangi beban kognitif otak dan memperbaiki kualitas tidur", "Menambah jumlah notifikasi aplikasi yang masuk setiap hari", "Mengurangi interaksi tatap muka dengan anggota keluarga"], a: 1 },
+  { q: "Istilah FOMO (Fear of Missing Out) dalam aktivitas dunia digital merujuk pada kondisi psikologis berupa ....",
+    o: ["Kemampuan menyaring berita bohong secara cepat dan akurat", "Rasa takut ketinggalan informasi atau tren sehingga terus memeriksa gawai dan memicu kecemasan", "Kebiasaan mematikan gawai selama akhir pekan untuk beristirahat", "Rasa puas setelah menyelesaikan tugas sekolah tepat waktu"], a: 1 },
+  { q: "Fitur bawaan pada perangkat bersistem operasi Android yang dikembangkan Google untuk membantu pengguna memantau dan mengelola waktu layar disebut ....",
+    o: ["Screen Time", "Incognito Mode", "Digital Wellbeing", "Windows Defender"], a: 2 },
+  { q: "Tujuan utama dari penyusunan sebuah algoritma dalam bidang Informatika adalah ....",
+    o: ["Menyelesaikan suatu masalah melalui urutan langkah-langkah yang logis dan terstruktur", "Memperindah tampilan antarmuka grafis sebuah situs web", "Menggantikan seluruh peran manusia dalam merancang perangkat lunak", "Memperbesar kapasitas penyimpanan keras pada komputer"], a: 0 },
+  { q: "Menurut kriteria penyusunan algoritma yang baik, sebuah algoritma dikatakan memenuhi kriteria efisien apabila ....",
+    o: ["Ditulis menggunakan sintaks bahasa pemrograman yang paling rumit", "Membutuhkan kapasitas memori yang sangat besar saat dijalankan", "Tepat guna menyelesaikan masalah tanpa membuang-buang waktu, tenaga, dan memori", "Berjalan terus-menerus tanpa pernah berhenti pada suatu keluaran"], a: 2 },
+  { q: "Dalam konsep IPO (Input-Process-Output) pada penyusunan algoritma, pengertian dari output adalah ....",
+    o: ["Data mentah yang dimasukkan pengguna ke dalam program", "Keluaran atau hasil akhir yang diperoleh dari proses algoritma", "Catatan komentar yang menjelaskan maksud baris kode", "Variabel konstanta yang nilainya ditetapkan di awal program"], a: 1 },
+  { q: "Simbol pada flowchart yang digunakan untuk menyatakan titik awal (Mulai) dan titik akhir (Selesai) suatu program adalah ....",
+    o: ["Decision Symbol", "Processing Symbol", "Terminator Symbol", "Input/Output Symbol"], a: 2 },
+  { q: "Bahasa dan kata kunci yang digunakan dalam penulisan pseudocode memiliki kemiripan dengan ....",
+    o: ["Bahasa pemrograman tingkat tinggi", "Kode biner mesin (0 dan 1)", "Simbol grafis diagram alir", "Bahasa daerah yang tidak terstruktur"], a: 0 },
+  { q: "Dampak negatif jangka panjang yang paling merugikan dari memposting foto yang tidak pantas di media sosial adalah ....",
+    o: ["Kuota internet menjadi lebih hemat saat membuka aplikasi", "Meninggalkan jejak digital buruk yang dapat merusak harga diri dan reputasi di masa depan", "Akun media sosial otomatis mendapatkan tanda centang biru", "Foto langsung terhapus permanen oleh server setelah satu jam"], a: 1 },
+  { q: "Seorang siswa mengunggah desain presentasi milik temannya di Instagram tanpa izin dan mengakuinya sebagai karyanya sendiri. Jika kamu menjadi guru yang melihat kejadian tersebut, tindakan edukatif dan etis yang paling tepat dilakukan adalah ....",
+    o: ["Membiarkannya saja agar tidak menimbulkan keributan di kelas", "Memarahi dan mempermalukan siswa tersebut di hadapan seluruh sekolah", "Menjelaskan pentingnya menghargai hak cipta serta memintanya menghapus unggahan dan meminta maaf", "Menyuruh siswa lain untuk ikut menyalin karya tersebut secara bebas"], a: 2 },
+  { q: "Dampak berbahaya yang dapat menimpa seseorang akibat membagikan data pribadi seperti NIK dan nomor rekening bank secara sembarangan di internet adalah ....",
+    o: ["Mendapatkan hadiah undian resmi dari penyedia layanan internet", "Menurunnya keamanan data sehingga rentan disalahgunakan untuk pencurian identitas dan penipuan", "Meningkatnya kecepatan akses transaksi perbankan daring", "Terlindunginya akun media sosial dari serangan peretas"], a: 1 },
+  { q: "Pelanggaran berupa penyebaran informasi elektronik yang ditujukan untuk menimbulkan rasa kebencian atau permusuhan berdasarkan Suku, Agama, Ras, dan Antargolongan (SARA) diatur dalam UU ITE ....",
+    o: ["Pasal 27 ayat (1)", "Pasal 27 ayat (2)", "Pasal 28 ayat (2)", "Pasal 29"], a: 2 },
+  { q: "Nama virus komputer populer pada tahun 2000 yang menyebar cepat melalui surel ke seluruh dunia dan menghancurkan file gambar, musik, serta sistem operasi adalah ....",
+    o: ["Morris Worm", "Conficker", "ILOVEYOU", "Melissa"], a: 2 },
+  { q: "Fungsi utama dari fitur pengatur waktu aplikasi (App Timers) pada menu Digital Wellbeing Android adalah ....",
+    o: ["Mengubah tampilan layar ponsel menjadi hitam putih saat malam hari", "Menetapkan batas waktu harian untuk aplikasi tertentu sehingga otomatis dijeda bila batas tercapai", "Mengunci seluruh panggilan telepon masuk dari nomor tidak dikenal", "Menampilkan lokasi GPS perangkat anak secara waktu nyata"], a: 1 },
+  { q: "Fitur waktu henti (Downtime) pada iOS Screen Time memiliki fungsi utama untuk ....",
+    o: ["Menjadwalkan waktu istirahat jauh dari layar di mana hanya aplikasi yang diizinkan yang dapat digunakan", "Menghapus seluruh aplikasi media sosial secara otomatis dari iPhone", "Mempercepat pengisian daya baterai saat ponsel tidak digunakan", "Memblokir seluruh pesan SMS dan panggilan darurat masuk"], a: 0 },
+  { q: "Risiko keamanan utama dari mengunduh dan memasang aplikasi atau game bajakan dari situs tidak resmi adalah ....",
+    o: ["Aplikasi berjalan jauh lebih stabil dibandingkan versi toko resmi", "Aplikasi tidak memiliki sertifikat digital tepercaya sehingga rawan disusupi malware pencuri data", "Kapasitas penyimpanan ponsel otomatis bertambah besar", "Perangkat mendapatkan pembaruan sistem operasi lebih cepat"], a: 1 },
+  { q: "Peran dan fungsi utama fitur Firewall dalam keamanan jaringan komputer adalah ....",
+    o: ["Mempercepat proses rendering video beresolusi tinggi", "Memonitor serta menyaring aktivitas dan lalu lintas data pada jaringan dan koneksi internet", "Mengubah file dokumen teks menjadi format gambar PNG", "Menyimpan kata sandi pengguna ke dalam cookie peramban"], a: 1 },
+  { q: "Penerapan konsep mindfulness dalam penggunaan teknologi di lingkungan rumah dapat diwujudkan melalui kebiasaan ....",
+    o: ["Membawa ponsel ke meja makan dan terus membalas pesan saat berkumpul", "Menetapkan zona bebas gadget seperti di kamar tidur dan saat makan bersama", "Menyalakan seluruh suara notifikasi aplikasi selama 24 jam penuh", "Bermain game daring hingga larut malam menjelang tidur"], a: 1 },
+  { q: "Perhatikan notasi penugasan (assignment) dalam pseudocode berikut: <pre>K &larr; 2 * phi * r</pre> Arti dari notasi tersebut adalah ....",
+    o: ["Membandingkan apakah nilai K sama dengan 2 * phi * r", "Menghitung hasil 2 * phi * r dan menyimpannya ke dalam variabel K", "Menampilkan nilai variabel K ke layar monitor", "Menghapus nilai variabel r dari memori komputer"], a: 1 },
+  { q: "Manakah di antara contoh berikut yang merupakan penulisan instruksi pseudocode yang benar?",
+    o: ["7 &larr; nilai", "nilai &larr; 7", "input = 7 &larr; nilai", "nilai &rarr; 7"], a: 1 },
+  { q: "Berikut ini yang merupakan pedoman dan aturan yang benar dalam penulisan pseudocode adalah ....",
+    o: ["Menggunakan simbol // untuk menuliskan komentar penjelas", "Menuliskan seluruh instruksi program dalam satu baris panjang tanpa spasi", "Menggunakan bahasa daerah agar sulit dipahami pemrogram lain", "Mengawali nama setiap variabel dengan angka terlebih dahulu"], a: 0 },
+  { q: "Tujuan penggunaan komentar dalam penyusunan teks algoritma maupun pseudocode adalah ....",
+    o: ["Mempercepat waktu eksekusi program oleh prosesor", "Memperjelas maksud langkah algoritma atau kode bagi pembaca", "Menyimpan nilai konstanta yang bersifat tetap", "Menghentikan perulangan tak terbatas (infinite loop)"], a: 1 },
+  { q: "Keunggulan penulisan algoritma menggunakan pseudocode dibandingkan dengan flowchart adalah ....",
+    o: ["Dapat langsung dijalankan oleh mesin komputer tanpa diterjemahkan", "Memiliki simbol-simbol grafis standar berbentuk bangun datar", "Lebih ringkas untuk algoritma panjang, universal, dan mudah diterjemahkan ke bahasa pemrograman", "Sangat cocok digunakan untuk menggambar sketsa poster digital"], a: 2 },
+  { q: "Pada struktur percabangan if / else, perintah yang berada di dalam blok else akan dijalankan apabila ....",
+    o: ["Kondisi pengujian pada pernyataan if bernilai benar (true)", "Kondisi pengujian pada pernyataan if bernilai salah (false)", "Program mengalami kesalahan penulisan variabel", "Tidak ada input yang dimasukkan oleh pengguna"], a: 1 },
+  { q: "Perhatikan potongan pseudocode percabangan berikut:<pre>nilai &larr; 70\nif nilai &gt;= 75 then\n    Write(\"Tuntas\")\nelse\n    Write(\"Perlu Perbaikan\")</pre>Luaran (output) yang akan ditampilkan apabila algoritma tersebut dijalankan adalah ....",
+    o: ["70", "75", "Tuntas", "Perlu Perbaikan"], a: 3 },
+  { q: "Perhatikan gambar simbol flowchart berikut:<pre>&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;\n&#9474;   Luas &larr; panjang * lebar  &#9474;\n&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;</pre>Nama simbol flowchart berbentuk persegi panjang yang menunjukkan pengolahan atau perhitungan oleh komputer tersebut adalah ....",
+    o: ["Terminator Symbol", "Decision Symbol", "Processing Symbol", "Connector Symbol"], a: 2 },
+  { q: "Fungsi utama dari Flow Direction Symbol (simbol garis berpanah) dalam penggambaran sebuah flowchart adalah ....",
+    o: ["Memberikan nilai awal pada variabel penghitung (counter)", "Menghubungkan antar-simbol dan merepresentasikan aliran data serta urutan proses", "Menyatakan kondisi percabangan yang memiliki jawaban Ya atau Tidak", "Menunjukkan proses pemasukan data dari papan ketik (keyboard)"], a: 1 }
+];
+
+const paketB = [
+  { q: "Perbedaan mendasar antara media digital dan media cetak tradisional terlihat dari karakteristiknya. Berikut ini yang <b>tidak</b> termasuk karakteristik media digital adalah ....",
+    o: ["Efektivitas kontennya dapat diukur (measurable) menggunakan alat analitik", "Informasi dapat diperbarui dan disebarkan secara cepat (real-time)", "Konten hanya dapat diakses pada satu lokasi fisik tertentu saja", "Memadukan berbagai format media dalam satu platform"], a: 2 },
+  { q: "Raka merekam beberapa klip video kegiatan sekolah menggunakan smartphone dan ingin memotong bagian yang tidak perlu serta menambahkan transisi dengan mudah langsung di ponselnya. Aplikasi editing video smartphone populer yang dapat digunakan Raka adalah ....",
+    o: ["InShot dan KineMaster", "Microsoft Word dan Excel", "Audacity dan GarageBand", "Google Keep dan Evernote"], a: 0 },
+  { q: "Saat menyimpan gambar digital dalam format JPG, ukuran file menjadi jauh lebih kecil dibandingkan gambar aslinya karena algoritma membuang sebagian data detail. Teknik kompresi file seperti ini disebut ....",
+    o: ["Lossless compression", "Lossy compression", "Archival compression", "Raw compression"], a: 1 },
+  { q: "Andi merekam video wawancara di halaman sekolah dengan posisi objek membelakangi cahaya matahari yang terik (backlight). Dampak yang muncul pada hasil rekaman video Andi adalah ....",
+    o: ["Latar belakang menjadi hitam pekat sementara wajah objek sangat terang", "Wajah dan tubuh objek utama tampak gelap atau siluet", "Suara rekaman menjadi terputus-putus akibat cahaya berlebih", "Resolusi video otomatis turun menjadi kualitas terendah"], a: 1 },
+  { q: "Penerapan etika digital di dunia maya sangat penting bagi setiap warga digital dengan tujuan utama untuk ....",
+    o: ["Membangun kepercayaan, menjaga reputasi digital, dan mencegah penyalahgunaan teknologi", "Menghapus seluruh rekam jejak digital seseorang di mesin pencari", "Membatasi kreativitas pengguna dalam membuat karya seni digital", "Memastikan semua informasi pribadi dapat diakses secara terbuka"], a: 0 },
+  { q: "Sebelum mengunggah konten video ke platform publik seperti YouTube, pembuat konten harus menghindari pelanggaran hak cipta dengan cara tidak ....",
+    o: ["Merekam pemandangan alam di lingkungan sekitar rumah", "Menggunakan cuplikan video atau lagu milik kreator lain tanpa izin dan atribusi", "Membuat animasi teks judul menggunakan fitur bawaan editor video", "Merekam suara narasi penjelasan dengan mikrofon eksternal"], a: 1 },
+  { q: "Sebuah tulisan menyajikan gambaran yang sangat rinci mengenai spesifikasi, bentuk, serta cara kerja suatu perangkat teknologi. Berdasarkan sifatnya, informasi tersebut termasuk jenis informasi ....",
+    o: ["Opini", "Deskripsi", "Provokatif", "Anonim"], a: 1 },
+  { q: "Siti membuat desain stiker dan logo tim basket sekolah, lalu ingin menyimpannya tanpa latar belakang putih di sekeliling gambar. Format file gambar yang paling tepat dipilih Siti adalah ....",
+    o: ["JPEG", "PNG", "WAV", "DOCX"], a: 1 },
+  { q: "Berdasarkan regulasi perlindungan data pribadi di Indonesia, prinsip perlakuan yang benar terhadap informasi pribadi penduduk oleh instansi maupun individu adalah ....",
+    o: ["Bebas diperjualbelikan kepada pihak ketiga untuk keperluan iklan", "Dilarang dijadikan sebagai bahan informasi publik dan wajib dijaga kerahasiaannya", "Wajib dicantumkan pada setiap kolom komentar media sosial", "Dapat dibuka kepada siapa saja tanpa persetujuan pemilik data"], a: 1 },
+  { q: "Ketika pengguna mengaktifkan fitur Geotag pada aplikasi kamera ponsel, data lokasi geografis (latitude dan longitude) diperoleh melalui teknologi ....",
+    o: ["GPS", "Wi-Fi Hotspot", "Barcode Scanner", "Bluetooth Low Energy"], a: 0 },
+  { q: "Sebuah pesan berantai di media sosial mengabarkan informasi yang memihak golongan tertentu dengan bahasa menghasut, tidak mencantumkan sumber resmi, dan menantang pembaca untuk membuktikan kesalahannya. Ciri-ciri tersebut menandakan bahwa berita itu adalah ....",
+    o: ["Whistle blower", "Informasi faktual", "Hoax", "Opini ilmiah"], a: 2 },
+  { q: "Landasan hukum di Indonesia yang mengatur tentang pers serta menjadi acuan kredibilitas badan hukum media massa adalah ....",
+    o: ["UU No. 40 Tahun 1999", "UU No. 11 Tahun 2008", "UU No. 1 Tahun 2024", "UU No. 14 Tahun 2008"], a: 0 },
+  { q: "Dini menulis artikel edukasi sepanjang 1.500 kata mengenai tips belajar efektif dan ingin memublikasikannya agar mudah diakses pembaca melalui peramban web. Platform yang paling tepat digunakan Dini adalah ....",
+    o: ["Situs web atau blog pribadi seperti Blogger dan WordPress", "Aplikasi berbagi rekaman audio singkat", "Aplikasi penyunting foto berbasis ponsel", "Layanan pesan instan pribadi"], a: 0 },
+  { q: "Ketika menggunakan foto dari internet yang berlisensi Creative Commons untuk keperluan desain poster edukasi, penerapan etika digital yang benar adalah ....",
+    o: ["Mengklaim foto tersebut sebagai hasil jepretan kamera sendiri", "Mencantumkan nama pembuat atau sumber asli foto sebagai bentuk atribusi", "Menghapus informasi hak cipta pada keterangan gambar", "Menjual kembali foto tersebut sebagai karya pribadi"], a: 1 },
+  { q: "Kumpulan angka hasil survei tinggi badan siswa kelas IX yang belum diolah disebut sebagai data, sedangkan grafik rata-rata tinggi badan yang sudah dianalisis dan mudah dipahami disebut sebagai ....",
+    o: ["Metadata", "Informasi", "Algoritma", "Konstanta"], a: 1 },
+  { q: "Segala jenis program atau perangkat lunak berbahaya seperti virus, worm, trojan horse, dan spyware yang dibuat untuk merusak atau menyusup ke sistem komputer dikelompokkan sebagai ....",
+    o: ["Freeware", "Malware", "Hardware", "Shareware"], a: 1 },
+  { q: "Sebuah rumah sakit mengalami gangguan layanan karena seluruh file basis data pasien di komputernya terkunci secara otomatis dan muncul pesan yang meminta tebusan sejumlah uang digital agar file dapat didekripsi. Jenis malware yang menyerang komputer tersebut adalah ....",
+    o: ["Ransomware", "Pharming", "Botnet", "Keylogger"], a: 0 },
+  { q: "Penyebaran Morris Worm pada tahun 1988 mengguncang dunia internet saat itu karena berdampak ....",
+    o: ["Melumpuhkan dan memperlambat ribuan komputer UNIX akibat penggandaan diri tanpa henti", "Mengubah seluruh halaman depan situs berita menjadi iklan komersial", "Mencuri kata sandi perbankan melalui kamera webcam pengguna", "Menghapus seluruh sistem operasi ponsel pintar di dunia"], a: 0 },
+  { q: "Pelaku penipuan daring menelepon korban dengan menyamar sebagai staf teknis perusahaan software dan membujuk korban mengunduh file pembaruan palsu yang ternyata berisi malware. Metode serangan yang memanfaatkan manipulasi psikologis manusia ini disebut ....",
+    o: ["Pharming", "Rekayasa sosial (social engineering)", "Enkripsi ujung ke ujung (end-to-end)", "Pemindaian biometrik"], a: 1 },
+  { q: "Selain mencocokkan signature virus dengan kamus database, cara kerja kedua yang dilakukan perangkat lunak anti-malware dalam mendeteksi ancaman adalah ....",
+    o: ["Memantau sistem terhadap perilaku mencurigakan yang mengubah file sistem secara tidak sah", "Mematikan layar monitor secara otomatis setiap satu jam sekali", "Mengirimkan seluruh file pengguna ke server publik untuk diperiksa", "Menghapus seluruh aplikasi yang tidak memiliki ikon di desktop"], a: 0 },
+  { q: "Mengapa penggunaan password saja sebagai satu-satunya metode autentikasi dianggap memiliki kelemahan dalam keamanan informasi?",
+    o: ["Karena password hanya bisa dibuat menggunakan angka saja", "Karena password dapat terlupa, mudah ditebak, atau dicuri melalui situs phishing", "Karena password tidak dapat digunakan untuk masuk ke layanan perbankan", "Karena password membuat ukuran file di komputer menjadi lebih besar"], a: 1 },
+  { q: "Penerapan sikap mindfulness dalam kehidupan sehari-hari dapat dilatih melalui kegiatan sederhana di luar penggunaan gawai, contohnya ....",
+    o: ["Makan dengan penuh kesadaran menikmati rasa makanan tanpa sambil menonton video di ponsel", "Mengerjakan pekerjaan rumah sambil terus membalas obrolan di tiga grup berbeda", "Berjalan kaki di jalan raya sambil menunduk menatap layar media sosial", "Melamunkan penyesalan masa lalu sepanjang hari"], a: 0 },
+  { q: "Perbedaan mendasar antara sekadar menggunakan ponsel dengan menggunakan ponsel secara mindful terletak pada ....",
+    o: ["Harga dan merek ponsel pintar yang digunakan", "Niat yang jelas serta kesadaran penuh saat berinteraksi dengan perangkat digital", "Jumlah aplikasi media sosial yang terpasang di dalam ponsel", "Kecepatan koneksi internet yang dipakai pengguna"], a: 1 },
+  { q: "Poin \"Tanpa Penghakiman (Non-judgmental)\" dalam konsep mindfulness mengajarkan kita untuk ....",
+    o: ["Mengamati pikiran dan perasaan apa adanya tanpa langsung melabelinya baik atau buruk", "Menilai setiap unggahan teman di media sosial dengan komentar kritis", "Menolak seluruh perasaan sedih atau cemas yang muncul dalam diri", "Menghakimi kesalahan orang lain secara terbuka di ruang digital"], a: 0 },
+  { q: "Dampak negatif yang timbul pada kesehatan mental remaja akibat mengalami FOMO (Fear of Missing Out) adalah ....",
+    o: ["Meningkatnya fokus belajar karena jarang membuka notifikasi ponsel", "Munculnya rasa cemas berlebihan dan dorongan terus-menerus mengecek media sosial", "Kualitas tidur menjadi lebih nyenyak karena selalu mengikuti tren terbaru", "Berkurangnya waktu layar harian secara drastis"], a: 1 },
+  { q: "Pada smartphone berbasis Android, pengguna dapat memeriksa berapa kali mereka membuka kunci layar serta durasi penggunaan setiap aplikasi melalui fitur bawaan ....",
+    o: ["Screen Time", "Digital Wellbeing", "File Manager", "Bluetooth Tethering"], a: 1 },
+  { q: "Sebelum menulis program komputer, seorang pemrogram menyusun algoritma terlebih dahulu dengan tujuan utama untuk ....",
+    o: ["Merancang urutan langkah logis yang terstruktur guna menyelesaikan suatu masalah dengan benar", "Menghemat daya listrik yang digunakan oleh monitor komputer", "Menghindari penggunaan variabel dan tipe data dalam kode program", "Membuat tampilan animasi tiga dimensi pada sistem operasi"], a: 0 },
+  { q: "Dua algoritma sama-sama mampu menghitung rute terpendek dengan hasil akurat, tetapi algoritma pertama bekerja jauh lebih cepat dan hemat memori dibandingkan algoritma kedua. Hal ini menunjukkan bahwa algoritma pertama lebih memenuhi kriteria ....",
+    o: ["Ambiguitas", "Efisien", "Infinite", "Deskriptif"], a: 1 },
+  { q: "Berdasarkan kriteria algoritma menurut Donald E. Knuth, setiap algoritma minimal harus memiliki satu output yang artinya ....",
+    o: ["Harus ada hasil keluaran nyata yang diperoleh setelah proses dijalankan", "Harus ada minimal satu masukan angka yang diketik oleh pengguna", "Program harus berjalan selamanya tanpa berhenti", "Algoritma harus ditulis dalam bahasa Inggris baku"], a: 0 },
+  { q: "Dalam pembuatan flowchart, titik awal mulainya program dan titik akhir selesainya program harus digambarkan menggunakan simbol ....",
+    o: ["Preparation Symbol", "Terminator Symbol", "Predefined Process Symbol", "Off Page Connector Symbol"], a: 1 },
+  { q: "Penulisan algoritma dalam bentuk pseudocode lebih mudah diterjemahkan ke dalam program komputer karena bahasanya menyerupai ....",
+    o: ["Bahasa pemrograman tingkat tinggi", "Sandi morse dan kode rahasia", "Bahasa percakapan sehari-hari yang panjang", "Gambar bagan alir bercabang"], a: 0 },
+  { q: "Mengunggah foto korban kecelakaan atau peristiwa kekerasan ke media sosial merupakan tindakan yang tidak pantas karena berdampak ....",
+    o: ["Meningkatkan empati masyarakat terhadap pengguna media sosial", "Menyinggung naluri kemanusiaan dan menimbulkan ketidaknyamanan bagi pengguna lain", "Membantu mempercepat proses penyembuhan korban secara medis", "Membuat akun pengunggah menjadi lebih aman dari peretasan"], a: 1 },
+  { q: "Jika kamu menemukan temanmu mengunggah karya gambar milik ilustrator lain di media sosial tanpa izin dan menghapus nama pembuat aslinya, tindakan etis yang sebaiknya kamu lakukan adalah ....",
+    o: ["Ikut membagikan gambar tersebut tanpa mencantumkan sumber", "Menjelaskan aturan hak cipta secara sopan dan menyarankannya mencantumkan kredit atau menghapus unggahan", "Mengejek teman tersebut di kolom komentar publik agar merasa malu", "Melaporkan akun pemilik karya asli agar diblokir oleh platform"], a: 1 },
+  { q: "Risiko serius yang dapat dialami seseorang apabila mengunggah foto dokumen pribadi seperti ijazah, KTP, atau paspor ke media sosial secara terbuka adalah ....",
+    o: ["Dokumen tersebut otomatis terverifikasi oleh pemerintah", "Data pribadi di dalamnya dapat dicuri dan disalahgunakan untuk tindak kriminal atau penipuan", "Ukuran file foto menjadi lebih tajam dan jernih", "Pemilik dokumen mendapatkan perlindungan hukum tambahan"], a: 1 },
+  { q: "Seseorang dengan sengaja menyebarkan unggahan di media sosial yang menghina suku dan agama tertentu sehingga memicu permusuhan antarwarga. Perbuatan tersebut melanggar ketentuan UU ITE pada ....",
+    o: ["Pasal 27 ayat (3)", "Pasal 27 ayat (4)", "Pasal 28 ayat (1)", "Pasal 28 ayat (2)"], a: 3 },
+  { q: "Pada tahun 2000, sebuah virus komputer yang menyebar lewat lampiran surel menginfeksi puluhan juta komputer di seluruh dunia serta merusak file gambar, musik, dan sistem operasi. Virus komputer tersebut dikenal dengan nama ....",
+    o: ["Brain", "ILOVEYOU", "Zeus", "Mariposa"], a: 1 },
+  { q: "Roni ingin membatasi waktu bermain game di ponsel Android-nya maksimal 45 menit per hari agar tidak mengganggu waktu belajar. Fitur pada Digital Wellbeing yang tepat digunakan Roni adalah ....",
+    o: ["App Timers", "Grayscale Screen", "Do Not Disturb", "Auto Rotate"], a: 0 },
+  { q: "Pengguna iPhone dapat menjadwalkan waktu jauh dari layar (misalnya pada jam tidur pukul 22.00 hingga 06.00) sehingga hanya aplikasi tertentu yang diizinkan tetap aktif melalui fitur Screen Time bernama ....",
+    o: ["Always Allowed", "Downtime", "App Limits", "Content Restrictions"], a: 1 },
+  // Soal tambahan 89-100 (melengkapi Paket B menjadi 50 soal)
+  { q: "Perangkat lunak sumber terbuka (open source) yang banyak digunakan untuk merekam dan mengedit audio secara profesional adalah ....",
+    o: ["Audacity", "Photoshop", "Notepad", "VLC Media Player"], a: 0 },
+  { q: "Format file audio yang menggunakan kompresi lossy dan paling umum digunakan untuk mendengarkan musik digital adalah ....",
+    o: ["WAV", "MP3", "PNG", "TIFF"], a: 1 },
+  { q: "Perbedaan utama antara kompresi lossless dan lossy adalah ....",
+    o: ["Lossless mempertahankan seluruh data asli tanpa kehilangan kualitas", "Lossy selalu menghasilkan file lebih besar dari aslinya", "Lossless hanya bekerja pada file video", "Lossy tidak dapat memperkecil ukuran file"], a: 0 },
+  { q: "Langkah pertama yang tepat untuk memverifikasi kebenaran berita sebelum menyebarkannya kepada orang lain adalah ....",
+    o: ["Memeriksa sumber berita dan mencari referensi dari media kredibel lain", "Langsung menyebarkan karena sudah banyak yang membagikan", "Mengubah judul berita agar lebih menarik perhatian", "Menambahkan opini pribadi sebelum menyebarkan"], a: 0 },
+  { q: "Fungsi utama enkripsi data dalam transmisi melalui jaringan internet adalah ....",
+    o: ["Mengubah data menjadi kode yang tidak dapat dibaca pihak lain tanpa kunci", "Mempercepat koneksi internet pengguna", "Menghapus data setelah dikirim", "Memperbesar kapasitas penyimpanan server"], a: 0 },
+  { q: "Kriteria password yang dianggap kuat untuk melindungi akun digital adalah ....",
+    o: ["Menggunakan tanggal lahir agar mudah diingat", "Hanya terdiri dari huruf kecil semua", "Kombinasi huruf besar-kecil, angka, dan simbol dengan panjang memadai", "Menggunakan nama sendiri agar tidak lupa"], a: 2 },
+  { q: "Istilah phishing merujuk pada tindak kejahatan siber berupa ....",
+    o: ["Penipuan yang mengelabui korban untuk menyerahkan data sensitif melalui tautan atau pesan palsu", "Pembuatan program antivirus palsu", "Peretasan server pemerintah secara massal", "Pencurian perangkat keras komputer secara fisik"], a: 0 },
+  { q: "Berikut yang merupakan contoh penerapan algoritma dalam kehidupan sehari-hari adalah ....",
+    o: ["Resep masakan yang diikuti langkah demi langkah secara berurutan", "Menonton televisi tanpa tujuan yang jelas", "Membeli barang tanpa memeriksa harga", "Berjalan tanpa menentukan arah tujuan"], a: 0 },
+  { q: "Simbol flowchart yang berbentuk jajar genjang (parallelogram) digunakan untuk menyatakan ....",
+    o: ["Titik awal dan titik akhir program", "Proses input/output data", "Keputusan bercabang", "Perhitungan matematika"], a: 1 },
+  { q: "Simbol flowchart berbentuk belah ketupat (diamond) digunakan untuk menyatakan ....",
+    o: ["Awal dan akhir program", "Proses perhitungan", "Keputusan (decision) yang memiliki dua jalur", "Konektor antarhalaman"], a: 2 },
+  { q: "Dalam pseudocode, struktur perulangan yang digunakan ketika jumlah iterasi belum diketahui secara pasti adalah ....",
+    o: ["FOR", "WHILE", "IF", "CASE"], a: 1 },
+  { q: "Jejak digital (digital footprint) yang ditinggalkan pengguna internet saat memposting sesuatu bersifat ....",
+    o: ["Sementara dan hilang dalam hitungan menit", "Permanen dan sulit dihapus sepenuhnya dari internet", "Hanya dapat dilihat oleh pengguna sendiri", "Otomatis terhapus setelah 24 jam"], a: 1 }
+];
+
+/* ============================================================
+   STATE
+============================================================ */
+let paketDipilih = null;
+let soalAktif = [];
+let jawabanSiswa = [];
+let sedangUjian = false;
+
+/* ============================================================
+   PILIH PAKET
+============================================================ */
+function pilihPaket(p) {
+  paketDipilih = p;
+  document.getElementById('cardA').classList.toggle('selected', p === 'A');
+  document.getElementById('cardB').classList.toggle('selected', p === 'B');
+}
+
+/* ============================================================
+   MULAI UJIAN
+============================================================ */
+function mulaiUjian() {
+  if (!paketDipilih) {
+    alert('⚠️ Silakan pilih Paket Soal A atau B terlebih dahulu!');
+    return;
+  }
+  const nama = document.getElementById('nama').value.trim();
+  const kelas = document.getElementById('kelas').value.trim();
+  const absen = document.getElementById('absen').value.trim();
+
+  if (!nama || !kelas || !absen) {
+    alert('⚠️ Silakan isi Nama, Kelas, dan Nomor Absen terlebih dahulu!');
+    return;
+  }
+
+  window.dataSiswa = { nama, kelas, absen, paket: paketDipilih };
+  soalAktif = (paketDipilih === 'A') ? paketA : paketB;
+  jawabanSiswa = new Array(soalAktif.length).fill(null);
+  sedangUjian = true;
+
+  document.getElementById('paketForm').style.display = 'none';
+  document.getElementById('soalContainer').style.display = 'block';
+  document.getElementById('hasil').style.display = 'none';
+  document.getElementById('badgePaket').textContent = 'PAKET ' + paketDipilih;
+
+  renderSoal();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderSoal() {
+  const container = document.getElementById('daftarSoal');
+  container.innerHTML = '';
+
+  soalAktif.forEach((soal, i) => {
+    const div = document.createElement('div');
+    div.className = 'soal';
+    div.id = 'soal-' + i;
+
+    let opsiHtml = '';
+    soal.o.forEach((opsi, j) => {
+      opsiHtml += `
+        <label class="opsi" id="opsi-${i}-${j}">
+          <input type="radio" name="soal-${i}" value="${j}" onchange="pilihJawaban(${i}, ${j})">
+          <b>${String.fromCharCode(65 + j)}.</b> ${opsi}
+        </label>`;
+    });
+
+    div.innerHTML = `
+      <div class="pertanyaan"><span class="nomor">${i + 1}</span>${soal.q}</div>
+      ${opsiHtml}
+    `;
+    container.appendChild(div);
+  });
+
+  updateProgress();
+}
+
+function pilihJawaban(soalIndex, opsiIndex) {
+  if (!sedangUjian) return;
+  jawabanSiswa[soalIndex] = opsiIndex;
+  const soalDiv = document.getElementById('soal-' + soalIndex);
+  soalDiv.querySelectorAll('.opsi').forEach(el => el.classList.remove('selected'));
+  document.getElementById('opsi-' + soalIndex + '-' + opsiIndex).classList.add('selected');
+  updateProgress();
+}
+
+function updateProgress() {
+  const terjawab = jawabanSiswa.filter(j => j !== null).length;
+  document.getElementById('progressInfo').textContent =
+    `Terjawab: ${terjawab} / ${soalAktif.length} soal`;
+}
+
+/* ============================================================
+   SELESAI UJIAN
+============================================================ */
+function selesaiUjian() {
+  const terjawab = jawabanSiswa.filter(j => j !== null).length;
+  if (terjawab < soalAktif.length) {
+    const yakin = confirm(`Masih ada ${soalAktif.length - terjawab} soal yang belum dijawab.\nYakin ingin menyelesaikan?`);
+    if (!yakin) return;
+  }
+
+  sedangUjian = false;
+  let benar = 0;
+
+  soalAktif.forEach((soal, i) => {
+    const soalDiv = document.getElementById('soal-' + i);
+    const jawabanUser = jawabanSiswa[i];
+    soalDiv.querySelectorAll('.opsi').forEach(el => el.classList.remove('selected'));
+
+    if (jawabanUser !== null && jawabanUser === soal.a) {
+      benar++;
+      soalDiv.classList.add('correct');
+    } else {
+      soalDiv.classList.add('wrong');
+    }
+
+    const kunciDiv = document.createElement('div');
+    kunciDiv.className = 'kunci';
+    kunciDiv.style.display = 'block';
+    kunciDiv.innerHTML = '✔️ Kunci: <b>' + String.fromCharCode(65 + soal.a) + '.</b> ' + soal.o[soal.a];
+    soalDiv.appendChild(kunciDiv);
+  });
+
+  const nilai = Math.round((benar / soalAktif.length) * 100);
+
+  document.getElementById('soalContainer').style.display = 'none';
+  document.getElementById('hasil').style.display = 'block';
+
+  document.getElementById('infoSiswa').innerHTML =
+    `<strong>${window.dataSiswa.nama}</strong> — Kelas ${window.dataSiswa.kelas} — No. Absen ${window.dataSiswa.absen}<br>
+     <span style="font-size:13px;">Paket ${window.dataSiswa.paket}</span>`;
+  document.getElementById('nilai').textContent = nilai;
+
+  let pesan = '';
+  if (nilai >= 90) pesan = '🌟 Luar biasa! Pertahankan!';
+  else if (nilai >= 75) pesan = '👍 Bagus! Tingkatkan lagi.';
+  else if (nilai >= 60) pesan = '📖 Cukup. Perbanyak latihan.';
+  else pesan = '💪 Jangan menyerah, terus belajar!';
+  document.getElementById('pesan').textContent = pesan + ` (Benar ${benar} dari ${soalAktif.length})`;
+
+  document.getElementById('hasil').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ============================================================
+   ULANGI
+============================================================ */
+function ulangUjian() {
+  document.getElementById('nama').value = '';
+  document.getElementById('kelas').value = '';
+  document.getElementById('absen').value = '';
+  document.getElementById('cardA').classList.remove('selected');
+  document.getElementById('cardB').classList.remove('selected');
+  paketDipilih = null;
+
+  document.getElementById('hasil').style.display = 'none';
+  document.getElementById('soalContainer').style.display = 'none';
+  document.getElementById('paketForm').style.display = 'block';
+
+  document.getElementById('daftarSoal').innerHTML = '';
+  document.getElementById('progressInfo').textContent = '';
+  jawabanSiswa = [];
+  sedangUjian = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
